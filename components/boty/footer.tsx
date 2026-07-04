@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Instagram, Facebook, Twitter } from "lucide-react"
+import Link from "next/link";
+import { Instagram, Facebook, Twitter } from "lucide-react";
 
 const footerLinks = {
   shop: [
     { name: "Products", href: "#products" },
     { name: "About", href: "#about" },
     { name: "Ingredients", href: "#ingredients" },
-    { name: "Testimonials", href: "#testimonials" }
+    { name: "Testimonials", href: "#testimonials" },
   ],
   about: [
     { name: "Our Story", href: "#about" },
     { name: "Ingredients", href: "#ingredients" },
     { name: "Sustainability", href: "#about" },
-    { name: "Press", href: "/" }
+    { name: "Press", href: "/" },
   ],
   support: [
     { name: "Contact Us", href: "/" },
     { name: "FAQ", href: "/" },
     { name: "Shipping", href: "/" },
-    { name: "Returns", href: "/" }
-  ]
-}
+    { name: "Returns", href: "/" },
+  ],
+};
 
 export function Footer() {
   return (
@@ -30,17 +30,20 @@ export function Footer() {
       {/* Giant Background Text */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 pointer-events-none select-none z-0">
         <span className="font-serif text-[200px] sm:text-[200px] md:text-[400px] lg:text-[400px] xl:text-[400px] font-bold text-white/20 whitespace-nowrap leading-none">
-          AMBER
+          SkinTone
         </span>
       </div>
-      
+
       <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-16">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <h2 className="font-serif text-3xl text-foreground mb-4">AMBER</h2>
+            <h2 className="font-serif text-3xl text-foreground mb-4">
+              SkinTone
+            </h2>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-              Discover skincare that breathes with you. Pure ingredients, gentle rituals, radiant results.
+              Discover skincare that breathes with you. Pure ingredients, gentle
+              rituals, radiant results.
             </p>
             <div className="flex gap-4">
               <a
@@ -129,13 +132,19 @@ export function Footer() {
         <div className="pt-10 border-t border-border/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} AMBER. All rights reserved.
+              © {new Date().getFullYear()} SkinTone. All rights reserved.
             </p>
             <div className="flex gap-6">
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground boty-transition">
+              <Link
+                href="/"
+                className="text-sm text-muted-foreground hover:text-foreground boty-transition"
+              >
                 Privacy Policy
               </Link>
-              <Link href="/" className="text-sm text-muted-foreground hover:text-foreground boty-transition">
+              <Link
+                href="/"
+                className="text-sm text-muted-foreground hover:text-foreground boty-transition"
+              >
                 Terms of Service
               </Link>
             </div>
@@ -143,5 +152,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

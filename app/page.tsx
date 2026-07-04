@@ -1,18 +1,18 @@
-import { Header } from "@/components/boty/header"
-import { Hero } from "@/components/boty/hero"
-import { TrustBadges } from "@/components/boty/trust-badges"
-import { FeatureSection } from "@/components/boty/feature-section"
-import { ProductGrid } from "@/components/boty/product-grid"
-import { IngredientsSection } from "@/components/boty/ingredients-section"
-import { ImpactSection } from "@/components/boty/impact-section"
-import { Testimonials } from "@/components/boty/testimonials"
-import { CTABanner } from "@/components/boty/cta-banner"
-import { Newsletter } from "@/components/boty/newsletter"
-import { Footer } from "@/components/boty/footer"
-import { getProducts } from "@/lib/shopify"
+import { Header } from "@/components/boty/header";
+import { Hero } from "@/components/boty/hero";
+import { TrustBadges } from "@/components/boty/trust-badges";
+import { FeatureSection } from "@/components/boty/feature-section";
+import { ProductGrid } from "@/components/boty/product-grid";
+import { IngredientsSection } from "@/components/boty/ingredients-section";
+import { ImpactSection } from "@/components/boty/impact-section";
+import { Testimonials } from "@/components/boty/testimonials";
+import { CTABanner } from "@/components/boty/cta-banner";
+import { Newsletter } from "@/components/boty/newsletter";
+import { Footer } from "@/components/boty/footer";
+import { getProducts } from "@/lib/shopify";
 
 export default async function HomePage() {
-  const products = await getProducts()
+  const products = await getProducts();
 
   return (
     <main>
@@ -22,7 +22,7 @@ export default async function HomePage() {
       <div id="collection">
         <ProductGrid products={products} />
       </div>
-      <div id="why-amber">
+      <div id="why-SkinTone">
         <FeatureSection />
       </div>
       <div id="impact">
@@ -38,5 +38,5 @@ export default async function HomePage() {
       <Newsletter />
       <Footer />
     </main>
-  )
+  );
 }

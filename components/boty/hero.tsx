@@ -1,10 +1,13 @@
-"use client"
+"use client";
 
-import Link from "next/link"
+import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden" style={{ backgroundColor: '#e3e1e2' }}>
+    <section
+      className="relative min-h-screen flex items-center overflow-hidden"
+      style={{ backgroundColor: "#e3e1e2" }}
+    >
       {/* Background Video */}
       <video
         autoPlay
@@ -14,7 +17,7 @@ export function Hero() {
         className="absolute top-0 left-0 w-full h-full object-cover z-[1]"
         src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hero-amber-z3hBWww4xrjdc1lZKN6ilsHl9FdPSH.mp4"
       />
-      
+
       {/* Bottom fade gradient */}
       <div className="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-t from-background via-background/50 to-transparent z-[5]" />
 
@@ -22,20 +25,43 @@ export function Hero() {
       <div className="relative z-10 w-full mr-14 lg:mr-0 pt-96">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="w-full lg:max-w-xl mx-auto lg:mx-0 text-center lg:text-left">
-            <span className="text-sm uppercase mb-6 block text-black animate-blur-in opacity-0 tracking-normal" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-              AMBER — Natural Beauty
+            <span
+              className="text-sm uppercase mb-6 block text-black animate-blur-in opacity-0 tracking-normal"
+              style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
+            >
+              SkinTone — Natural Beauty
             </span>
             <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl leading-[1.1] mb-6 text-balance text-black">
-              <span className="block animate-blur-in opacity-0 font-semibold" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>Skincare that</span>
-              <span className="block animate-blur-in opacity-0 font-semibold xl:text-9xl text-7xl" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>breathes with you.</span>
+              <span
+                className="block animate-blur-in opacity-0 font-semibold"
+                style={{
+                  animationDelay: "0.4s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                Skincare that
+              </span>
+              <span
+                className="block animate-blur-in opacity-0 font-semibold xl:text-9xl text-7xl"
+                style={{
+                  animationDelay: "0.6s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                breathes with you.
+              </span>
             </h2>
-            <p className="text-lg leading-relaxed mb-10 max-w-md mx-auto lg:mx-0 text-black animate-blur-in opacity-0" style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}>
-              Pure ingredients. Gentle rituals. Radiant results. Experience the transformative power of nature.
+            <p
+              className="text-lg leading-relaxed mb-10 max-w-md mx-auto lg:mx-0 text-black animate-blur-in opacity-0"
+              style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
+            >
+              Pure ingredients. Gentle rituals. Radiant results. Experience the
+              transformative power of nature.
             </p>
             <Link
               href="#collection"
               className="inline-flex items-center gap-2 bg-black text-white px-8 py-4 rounded-full text-sm tracking-wide hover:bg-black/80 boty-transition animate-blur-in opacity-0"
-              style={{ animationDelay: '1s', animationFillMode: 'forwards' }}
+              style={{ animationDelay: "1s", animationFillMode: "forwards" }}
             >
               Explore Collection
             </Link>
@@ -50,5 +76,5 @@ export function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }

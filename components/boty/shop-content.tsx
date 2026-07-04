@@ -1,51 +1,56 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useRef } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { ShoppingBag, SlidersHorizontal, X } from "lucide-react"
-import { Header } from "@/components/boty/header"
-import { Footer } from "@/components/boty/footer"
-import { useCart } from "@/components/boty/cart-context"
-import type { Product } from "@/lib/shopify"
+import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ShoppingBag, SlidersHorizontal, X } from "lucide-react";
+import { Header } from "@/components/boty/header";
+import { Footer } from "@/components/boty/footer";
+import { useCart } from "@/components/boty/cart-context";
+import type { Product } from "@/lib/shopify";
 
 export function ShopContent({ products }: { products: Product[] }) {
-  const categories = ["all", ...Array.from(new Set(products.map((p) => p.productType)))]
+  const categories = [
+    "all",
+    ...Array.from(new Set(products.map((p) => p.productType))),
+  ];
 
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [showFilters, setShowFilters] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
-  const gridRef = useRef<HTMLDivElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [showFilters, setShowFilters] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const filteredProducts =
-    selectedCategory === "all" ? products : products.filter((p) => p.productType === selectedCategory)
+    selectedCategory === "all"
+      ? products
+      : products.filter((p) => p.productType === selectedCategory);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setIsVisible(true)
+          setIsVisible(true);
         }
       },
       { threshold: 0.1 },
-    )
+    );
 
     if (gridRef.current) {
-      observer.observe(gridRef.current)
+      observer.observe(gridRef.current);
     }
 
     return () => {
       if (gridRef.current) {
-        observer.unobserve(gridRef.current)
+        observer.unobserve(gridRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
-    setIsVisible(false)
-    const timer = setTimeout(() => setIsVisible(true), 50)
-    return () => clearTimeout(timer)
-  }, [selectedCategory])
+    setIsVisible(false);
+    const timer = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(timer);
+  }, [selectedCategory]);
 
   return (
     <main className="min-h-screen">
@@ -96,7 +101,8 @@ export function ShopContent({ products }: { products: Product[] }) {
             </div>
 
             <span className="text-sm text-muted-foreground">
-              {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+              {filteredProducts.length}{" "}
+              {filteredProducts.length === 1 ? "product" : "products"}
             </span>
           </div>
 
@@ -105,7 +111,9 @@ export function ShopContent({ products }: { products: Product[] }) {
             <div className="lg:hidden fixed inset-0 z-50 bg-background">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-8">
-                  <h2 className="font-serif text-2xl text-foreground">Filters</h2>
+                  <h2 className="font-serif text-2xl text-foreground">
+                    Filters
+                  </h2>
                   <button
                     type="button"
                     onClick={() => setShowFilters(false)}
@@ -120,8 +128,8 @@ export function ShopContent({ products }: { products: Product[] }) {
                       key={category}
                       type="button"
                       onClick={() => {
-                        setSelectedCategory(category)
-                        setShowFilters(false)
+                        setSelectedCategory(category);
+                        setShowFilters(false);
                       }}
                       className={`w-full px-6 py-4 rounded-2xl text-left capitalize boty-transition ${
                         selectedCategory === category
@@ -138,9 +146,17 @@ export function ShopContent({ products }: { products: Product[] }) {
           )}
 
           {/* Product Grid */}
-          <div ref={gridRef} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            ref={gridRef}
+            className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {filteredProducts.map((product, index) => (
-              <ProductCard key={product.id} product={product} index={index} isVisible={isVisible} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                index={index}
+                isVisible={isVisible}
+              />
             ))}
           </div>
         </div>
@@ -148,15 +164,26 @@ export function ShopContent({ products }: { products: Product[] }) {
 
       <Footer />
     </main>
-  )
+  );
 }
 
-function ProductCard({ product, index, isVisible }: { product: Product; index: number; isVisible: boolean }) {
-  const [imageLoaded, setImageLoaded] = useState(false)
-  const { addItem, isPending } = useCart()
+function ProductCard({
+  product,
+  index,
+  isVisible,
+}: {
+  product: Product;
+  index: number;
+  isVisible: boolean;
+}) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const { addItem, isPending } = useCart();
 
   const formatPrice = (amount: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: product.currencyCode }).format(amount)
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: product.currencyCode,
+    }).format(amount);
 
   return (
     <Link
@@ -177,7 +204,7 @@ function ProductCard({ product, index, isVisible }: { product: Product; index: n
           />
 
           <Image
-            src={product.image || "/placeholder.svg"}
+            src={product.image || "/sie.jpg"}
             alt={product.name}
             fill
             className={`object-cover boty-transition group-hover:scale-105 transition-opacity duration-500 ${
@@ -205,8 +232,8 @@ function ProductCard({ product, index, isVisible }: { product: Product; index: n
             disabled={isPending || !product.availableForSale}
             className="absolute bottom-4 right-4 w-12 h-12 rounded-full bg-background/90 backdrop-blur-sm flex items-center justify-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 boty-transition boty-shadow disabled:opacity-50"
             onClick={(e) => {
-              e.preventDefault()
-              if (product.variantId) addItem(product.variantId, 1)
+              e.preventDefault();
+              if (product.variantId) addItem(product.variantId, 1);
             }}
             aria-label="Add to cart"
           >
@@ -216,10 +243,16 @@ function ProductCard({ product, index, isVisible }: { product: Product; index: n
 
         {/* Info */}
         <div className="p-6">
-          <h3 className="font-serif text-xl text-foreground mb-1">{product.name}</h3>
-          <p className="text-sm text-muted-foreground mb-4">{product.description}</p>
+          <h3 className="font-serif text-xl text-foreground mb-1">
+            {product.name}
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            {product.description}
+          </p>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-medium text-foreground">{formatPrice(product.price)}</span>
+            <span className="text-lg font-medium text-foreground">
+              {formatPrice(product.price)}
+            </span>
             {product.originalPrice && (
               <span className="text-sm text-muted-foreground line-through">
                 {formatPrice(product.originalPrice)}
@@ -229,5 +262,5 @@ function ProductCard({ product, index, isVisible }: { product: Product; index: n
         </div>
       </div>
     </Link>
-  )
+  );
 }

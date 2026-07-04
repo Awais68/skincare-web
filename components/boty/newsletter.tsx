@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { ArrowRight, Check } from "lucide-react"
+import { useState } from "react";
+import { ArrowRight, Check } from "lucide-react";
 
 export function Newsletter() {
-  const [email, setEmail] = useState("")
-  const [isSubscribed, setIsSubscribed] = useState(false)
+  const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (email) {
-      setIsSubscribed(true)
-      setEmail("")
+      setIsSubscribed(true);
+      setEmail("");
     }
-  }
+  };
 
   return (
     <section className="py-24 bg-zinc-600">
@@ -23,16 +23,22 @@ export function Newsletter() {
             Join the ritual
           </h2>
           <p className="text-lg text-primary-foreground/80 mb-10">
-            Subscribe for exclusive offers, skincare tips, and early access to new products.
+            Subscribe for exclusive offers, skincare tips, and early access to
+            new products.
           </p>
 
           {isSubscribed ? (
             <div className="inline-flex items-center gap-3 bg-primary-foreground/10 backdrop-blur-sm rounded-full px-8 py-4">
               <Check className="w-5 h-5 text-primary-foreground" />
-              <span className="text-primary-foreground">Welcome to the AMBER family!</span>
+              <span className="text-primary-foreground">
+                Welcome to the SkinTone family!
+              </span>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+            >
               <input
                 type="email"
                 value={email}
@@ -57,5 +63,5 @@ export function Newsletter() {
         </div>
       </div>
     </section>
-  )
+  );
 }

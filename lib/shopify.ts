@@ -1,23 +1,28 @@
-import "server-only"
+import "server-only";
 
-const API_VERSION = "2025-04"
+const API_VERSION = "2025-04";
 
 type ShopifyFetchOptions = {
-  query: string
-  variables?: Record<string, unknown>
-  cache?: RequestCache
-  tags?: string[]
-}
+  query: string;
+  variables?: Record<string, unknown>;
+  cache?: RequestCache;
+  tags?: string[];
+};
 
-export async function shopifyFetch<T>({ query, variables, cache = "force-cache", tags }: ShopifyFetchOptions): Promise<T> {
-  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN
-  const accessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+export async function shopifyFetch<T>({
+  query,
+  variables,
+  cache = "force-cache",
+  tags,
+}: ShopifyFetchOptions): Promise<T> {
+  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
+  const accessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
 
   if (!storeDomain || !accessToken) {
-    throw new Error("Missing Shopify environment variables")
+    throw new Error("Missing Shopify environment variables");
   }
 
-  const endpoint = `https://${storeDomain}/api/${API_VERSION}/graphql.json`
+  const endpoint = `https://${storeDomain}/api/${API_VERSION}/graphql.json`;
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -28,60 +33,60 @@ export async function shopifyFetch<T>({ query, variables, cache = "force-cache",
     body: JSON.stringify({ query, variables }),
     cache,
     ...(tags ? { next: { tags } } : {}),
-  })
+  });
 
   if (!res.ok) {
-    throw new Error(`Shopify fetch failed: ${res.status} ${res.statusText}`)
+    throw new Error(`Shopify fetch failed: ${res.status} ${res.statusText}`);
   }
 
-  const body = await res.json()
+  const body = await res.json();
 
   if (body.errors) {
-    console.log("[v0] Shopify GraphQL errors:", JSON.stringify(body.errors))
-    throw new Error(body.errors[0]?.message ?? "Shopify GraphQL error")
+    console.log("[v0] Shopify GraphQL errors:", JSON.stringify(body.errors));
+    throw new Error(body.errors[0]?.message ?? "Shopify GraphQL error");
   }
 
-  return body.data as T
+  return body.data as T;
 }
 
 // ---- Types ----
 
 export type Product = {
-  id: string // handle, used as the route id
-  shopifyId: string
-  variantId: string
-  name: string
-  description: string
-  descriptionHtml: string
-  price: number
-  originalPrice: number | null
-  currencyCode: string
-  image: string
-  images: string[]
-  badge: string | null
-  category: "cream" | "oil" | "serum"
-  productType: string
-  availableForSale: boolean
-}
+  id: string; // handle, used as the route id
+  shopifyId: string;
+  variantId: string;
+  name: string;
+  description: string;
+  descriptionHtml: string;
+  price: number;
+  originalPrice: number | null;
+  currencyCode: string;
+  image: string;
+  images: string[];
+  badge: string | null;
+  category: "cream" | "oil" | "serum";
+  productType: string;
+  availableForSale: boolean;
+};
 
-type ShopifyImage = { url: string; altText: string | null }
+type ShopifyImage = { url: string; altText: string | null };
 
 type ShopifyProductNode = {
-  id: string
-  handle: string
-  title: string
-  description: string
-  descriptionHtml: string
-  productType: string
-  tags: string[]
-  featuredImage: ShopifyImage | null
-  images: { edges: { node: ShopifyImage }[] }
-  priceRange: { minVariantPrice: { amount: string; currencyCode: string } }
-  compareAtPriceRange: { minVariantPrice: { amount: string } }
+  id: string;
+  handle: string;
+  title: string;
+  description: string;
+  descriptionHtml: string;
+  productType: string;
+  tags: string[];
+  featuredImage: ShopifyImage | null;
+  images: { edges: { node: ShopifyImage }[] };
+  priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+  compareAtPriceRange: { minVariantPrice: { amount: string } };
   variants: {
-    edges: { node: { id: string; availableForSale: boolean } }[]
-  }
-}
+    edges: { node: { id: string; availableForSale: boolean } }[];
+  };
+};
 
 const PRODUCT_FRAGMENT = `
   fragment ProductFields on Product {
@@ -98,27 +103,29 @@ const PRODUCT_FRAGMENT = `
     compareAtPriceRange { minVariantPrice { amount } }
     variants(first: 1) { edges { node { id availableForSale } } }
   }
-`
+`;
 
 function mapCategory(productType: string): Product["category"] {
-  const t = productType.toLowerCase()
-  if (t === "oil") return "oil"
-  if (t === "serum") return "serum"
-  return "cream"
+  const t = productType.toLowerCase();
+  if (t === "oil") return "oil";
+  if (t === "serum") return "serum";
+  return "cream";
 }
 
 function mapBadge(tags: string[]): string | null {
-  const lower = tags.map((t) => t.toLowerCase())
-  if (lower.includes("sale")) return "Sale"
-  if (lower.includes("new")) return "New"
-  if (lower.includes("bestseller")) return "Bestseller"
-  return null
+  const lower = tags.map((t) => t.toLowerCase());
+  if (lower.includes("sale")) return "Sale";
+  if (lower.includes("new")) return "New";
+  if (lower.includes("bestseller")) return "Bestseller";
+  return null;
 }
 
 function normalizeProduct(node: ShopifyProductNode): Product {
-  const price = Number.parseFloat(node.priceRange.minVariantPrice.amount)
-  const compareAt = Number.parseFloat(node.compareAtPriceRange?.minVariantPrice?.amount ?? "0")
-  const images = node.images.edges.map((e) => e.node.url)
+  const price = Number.parseFloat(node.priceRange.minVariantPrice.amount);
+  const compareAt = Number.parseFloat(
+    node.compareAtPriceRange?.minVariantPrice?.amount ?? "0",
+  );
+  const images = node.images.edges.map((e) => e.node.url);
 
   return {
     id: node.handle,
@@ -131,20 +138,26 @@ function normalizeProduct(node: ShopifyProductNode): Product {
     originalPrice: compareAt > price ? compareAt : null,
     currencyCode: node.priceRange.minVariantPrice.currencyCode,
     image: node.featuredImage?.url ?? images[0] ?? "/placeholder.svg",
-    images: images.length ? images : node.featuredImage ? [node.featuredImage.url] : [],
+    images: images.length
+      ? images
+      : node.featuredImage
+        ? [node.featuredImage.url]
+        : [],
     badge: mapBadge(node.tags),
     category: mapCategory(node.productType),
     productType: node.productType,
     availableForSale: node.variants.edges[0]?.node.availableForSale ?? false,
-  }
+  };
 }
 
 export async function getProducts(): Promise<Product[]> {
   if (useMockData()) {
-    return getMockProducts()
+    return getMockProducts();
   }
 
-  const data = await shopifyFetch<{ products: { edges: { node: ShopifyProductNode }[] } }>({
+  const data = await shopifyFetch<{
+    products: { edges: { node: ShopifyProductNode }[] };
+  }>({
     query: `
       ${PRODUCT_FRAGMENT}
       query GetProducts {
@@ -154,14 +167,14 @@ export async function getProducts(): Promise<Product[]> {
       }
     `,
     tags: ["products"],
-  })
+  });
 
-  return data.products.edges.map((e) => normalizeProduct(e.node))
+  return data.products.edges.map((e) => normalizeProduct(e.node));
 }
 
 export async function getProduct(handle: string): Promise<Product | null> {
   if (useMockData()) {
-    return getMockProduct(handle)
+    return getMockProduct(handle);
   }
 
   const data = await shopifyFetch<{ product: ShopifyProductNode | null }>({
@@ -173,58 +186,62 @@ export async function getProduct(handle: string): Promise<Product | null> {
     `,
     variables: { handle },
     tags: ["products"],
-  })
+  });
 
-  return data.product ? normalizeProduct(data.product) : null
+  return data.product ? normalizeProduct(data.product) : null;
 }
 
 // ---- Cart ----
 
 export type Cart = {
-  id: string
-  checkoutUrl: string
-  totalQuantity: number
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
   cost: {
-    subtotalAmount: { amount: string; currencyCode: string }
-    totalAmount: { amount: string; currencyCode: string }
-  }
-  lines: CartLine[]
-}
+    subtotalAmount: { amount: string; currencyCode: string };
+    totalAmount: { amount: string; currencyCode: string };
+  };
+  lines: CartLine[];
+};
 
 export type CartLine = {
-  id: string
-  quantity: number
-  merchandiseId: string
-  productHandle: string
-  title: string
-  image: string
-  price: number
-  currencyCode: string
-}
+  id: string;
+  quantity: number;
+  merchandiseId: string;
+  productHandle: string;
+  title: string;
+  image: string;
+  price: number;
+  currencyCode: string;
+};
 
 type ShopifyCart = {
-  id: string
-  checkoutUrl: string
-  totalQuantity: number
+  id: string;
+  checkoutUrl: string;
+  totalQuantity: number;
   cost: {
-    subtotalAmount: { amount: string; currencyCode: string }
-    totalAmount: { amount: string; currencyCode: string }
-  }
+    subtotalAmount: { amount: string; currencyCode: string };
+    totalAmount: { amount: string; currencyCode: string };
+  };
   lines: {
     edges: {
       node: {
-        id: string
-        quantity: number
-        cost: { totalAmount: { amount: string; currencyCode: string } }
+        id: string;
+        quantity: number;
+        cost: { totalAmount: { amount: string; currencyCode: string } };
         merchandise: {
-          id: string
-          price: { amount: string; currencyCode: string }
-          product: { handle: string; title: string; featuredImage: ShopifyImage | null }
-        }
-      }
-    }[]
-  }
-}
+          id: string;
+          price: { amount: string; currencyCode: string };
+          product: {
+            handle: string;
+            title: string;
+            featuredImage: ShopifyImage | null;
+          };
+        };
+      };
+    }[];
+  };
+};
 
 const CART_FRAGMENT = `
   fragment CartFields on Cart {
@@ -252,7 +269,7 @@ const CART_FRAGMENT = `
       }
     }
   }
-`
+`;
 
 function normalizeCart(cart: ShopifyCart): Cart {
   return {
@@ -266,36 +283,37 @@ function normalizeCart(cart: ShopifyCart): Cart {
       merchandiseId: e.node.merchandise.id,
       productHandle: e.node.merchandise.product.handle,
       title: e.node.merchandise.product.title,
-      image: e.node.merchandise.product.featuredImage?.url ?? "/placeholder.svg",
+      image:
+        e.node.merchandise.product.featuredImage?.url ?? "/placeholder.svg",
       price: Number.parseFloat(e.node.merchandise.price.amount),
       currencyCode: e.node.merchandise.price.currencyCode,
     })),
-  }
+  };
 }
 
 type CartMutationResult = {
-  cart: ShopifyCart | null
-  userErrors?: { field: string[] | null; message: string }[]
-  warnings?: { code: string; message: string }[]
-}
+  cart: ShopifyCart | null;
+  userErrors?: { field: string[] | null; message: string }[];
+  warnings?: { code: string; message: string }[];
+};
 
 function unwrapCart(result: CartMutationResult, op: string): Cart {
   if (result.userErrors && result.userErrors.length > 0) {
-    console.log(`[v0] ${op} userErrors:`, JSON.stringify(result.userErrors))
-    throw new Error(result.userErrors[0].message)
+    console.log(`[v0] ${op} userErrors:`, JSON.stringify(result.userErrors));
+    throw new Error(result.userErrors[0].message);
   }
   if (result.warnings && result.warnings.length > 0) {
-    console.log(`[v0] ${op} warnings:`, JSON.stringify(result.warnings))
+    console.log(`[v0] ${op} warnings:`, JSON.stringify(result.warnings));
   }
   if (!result.cart) {
-    throw new Error(`${op} returned no cart`)
+    throw new Error(`${op} returned no cart`);
   }
-  return normalizeCart(result.cart)
+  return normalizeCart(result.cart);
 }
 
 export async function createCart(): Promise<Cart> {
   if (useMockData()) {
-    return getMockCart()
+    return getMockCart();
   }
 
   const data = await shopifyFetch<{ cartCreate: CartMutationResult }>({
@@ -309,13 +327,13 @@ export async function createCart(): Promise<Cart> {
       }
     `,
     cache: "no-store",
-  })
-  return unwrapCart(data.cartCreate, "cartCreate")
+  });
+  return unwrapCart(data.cartCreate, "cartCreate");
 }
 
 export async function getCart(cartId: string): Promise<Cart | null> {
   if (useMockData()) {
-    return getMockCart()
+    return getMockCart();
   }
 
   const data = await shopifyFetch<{ cart: ShopifyCart | null }>({
@@ -327,13 +345,17 @@ export async function getCart(cartId: string): Promise<Cart | null> {
     `,
     variables: { cartId },
     cache: "no-store",
-  })
-  return data.cart ? normalizeCart(data.cart) : null
+  });
+  return data.cart ? normalizeCart(data.cart) : null;
 }
 
-export async function addToCart(cartId: string, merchandiseId: string, quantity: number): Promise<Cart> {
+export async function addToCart(
+  cartId: string,
+  merchandiseId: string,
+  quantity: number,
+): Promise<Cart> {
   if (useMockData()) {
-    return getMockCart()
+    return getMockCart();
   }
 
   const data = await shopifyFetch<{ cartLinesAdd: CartMutationResult }>({
@@ -349,13 +371,17 @@ export async function addToCart(cartId: string, merchandiseId: string, quantity:
     `,
     variables: { cartId, lines: [{ merchandiseId, quantity }] },
     cache: "no-store",
-  })
-  return unwrapCart(data.cartLinesAdd, "cartLinesAdd")
+  });
+  return unwrapCart(data.cartLinesAdd, "cartLinesAdd");
 }
 
-export async function updateCartLine(cartId: string, lineId: string, quantity: number): Promise<Cart> {
+export async function updateCartLine(
+  cartId: string,
+  lineId: string,
+  quantity: number,
+): Promise<Cart> {
   if (useMockData()) {
-    return getMockCart()
+    return getMockCart();
   }
 
   const data = await shopifyFetch<{ cartLinesUpdate: CartMutationResult }>({
@@ -370,13 +396,16 @@ export async function updateCartLine(cartId: string, lineId: string, quantity: n
     `,
     variables: { cartId, lines: [{ id: lineId, quantity }] },
     cache: "no-store",
-  })
-  return unwrapCart(data.cartLinesUpdate, "cartLinesUpdate")
+  });
+  return unwrapCart(data.cartLinesUpdate, "cartLinesUpdate");
 }
 
-export async function removeCartLine(cartId: string, lineId: string): Promise<Cart> {
+export async function removeCartLine(
+  cartId: string,
+  lineId: string,
+): Promise<Cart> {
   if (useMockData()) {
-    return getMockCart()
+    return getMockCart();
   }
 
   const data = await shopifyFetch<{ cartLinesRemove: CartMutationResult }>({
@@ -391,8 +420,8 @@ export async function removeCartLine(cartId: string, lineId: string): Promise<Ca
     `,
     variables: { cartId, lineIds: [lineId] },
     cache: "no-store",
-  })
-  return unwrapCart(data.cartLinesRemove, "cartLinesRemove")
+  });
+  return unwrapCart(data.cartLinesRemove, "cartLinesRemove");
 }
 
 // ---- Mock Data (Development Fallback) ----
@@ -403,12 +432,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-1",
     variantId: "mock-variant-1",
     name: "Radiance Serum",
-    description: "A lightweight, brightening serum with Vitamin C to even skin tone and boost glow.",
-    descriptionHtml: "<p>A lightweight, brightening serum with Vitamin C to even skin tone and boost glow.</p>",
+    description:
+      "A lightweight, brightening serum with Vitamin C to even skin tone and boost glow.",
+    descriptionHtml:
+      "<p>A lightweight, brightening serum with Vitamin C to even skin tone and boost glow.</p>",
     price: 48,
     originalPrice: 58,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/serum1.jpg",
     images: ["/placeholder.svg"],
     badge: "Bestseller",
     category: "serum",
@@ -420,13 +451,15 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-2",
     variantId: "mock-variant-2",
     name: "Hydra Cream",
-    description: "Deeply hydrating daily moisturizer with hyaluronic acid and squalane.",
-    descriptionHtml: "<p>Deeply hydrating daily moisturizer with hyaluronic acid and squalane.</p>",
+    description:
+      "Deeply hydrating daily moisturizer with hyaluronic acid and squalane.",
+    descriptionHtml:
+      "<p>Deeply hydrating daily moisturizer with hyaluronic acid and squalane.</p>",
     price: 42,
     originalPrice: null,
     currencyCode: "USD",
-    image: "/placeholder.svg",
-    images: ["/placeholder.svg"],
+    image: "/cream1.jpg",
+    images: ["/cream1.jpg"],
     badge: "New",
     category: "cream",
     productType: "Cream",
@@ -437,12 +470,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-3",
     variantId: "mock-variant-3",
     name: "Renewal Oil",
-    description: "Nutrient-rich face oil with rosehip and jojoba for overnight renewal.",
-    descriptionHtml: "<p>Nutrient-rich face oil with rosehip and jojoba for overnight renewal.</p>",
+    description:
+      "Nutrient-rich face oil with rosehip and jojoba for overnight renewal.",
+    descriptionHtml:
+      "<p>Nutrient-rich face oil with rosehip and jojoba for overnight renewal.</p>",
     price: 54,
     originalPrice: 64,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/sie.jpg",
     images: ["/placeholder.svg"],
     badge: "Sale",
     category: "oil",
@@ -454,12 +489,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-4",
     variantId: "mock-variant-4",
     name: "Gentle Cleanser",
-    description: "Soothing gel cleanser with aloe vera and green tea for all skin types.",
-    descriptionHtml: "<p>Soothing gel cleanser with aloe vera and green tea for all skin types.</p>",
+    description:
+      "Soothing gel cleanser with aloe vera and green tea for all skin types.",
+    descriptionHtml:
+      "<p>Soothing gel cleanser with aloe vera and green tea for all skin types.</p>",
     price: 28,
     originalPrice: null,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/cleanser1.jpg",
     images: ["/placeholder.svg"],
     badge: null,
     category: "cream",
@@ -471,12 +508,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-5",
     variantId: "mock-variant-5",
     name: "Night Cream",
-    description: "Rich overnight cream with peptides and ceramides for deep repair.",
-    descriptionHtml: "<p>Rich overnight cream with peptides and ceramides for deep repair.</p>",
+    description:
+      "Rich overnight cream with peptides and ceramides for deep repair.",
+    descriptionHtml:
+      "<p>Rich overnight cream with peptides and ceramides for deep repair.</p>",
     price: 52,
     originalPrice: null,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/nighty.jpg",
     images: ["/placeholder.svg"],
     badge: "New",
     category: "cream",
@@ -488,12 +527,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-6",
     variantId: "mock-variant-6",
     name: "Glow Serum",
-    description: "Niacinamide-based serum that minimizes pores and evens skin texture.",
-    descriptionHtml: "<p>Niacinamide-based serum that minimizes pores and evens skin texture.</p>",
+    description:
+      "Niacinamide-based serum that minimizes pores and evens skin texture.",
+    descriptionHtml:
+      "<p>Niacinamide-based serum that minimizes pores and evens skin texture.</p>",
     price: 44,
     originalPrice: 50,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/1.webp",
     images: ["/placeholder.svg"],
     badge: "Bestseller",
     category: "serum",
@@ -505,12 +546,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-7",
     variantId: "mock-variant-7",
     name: "Balancing Oil",
-    description: "Lightweight facial oil with tea tree and chamomile for combination skin.",
-    descriptionHtml: "<p>Lightweight facial oil with tea tree and chamomile for combination skin.</p>",
+    description:
+      "Lightweight facial oil with tea tree and chamomile for combination skin.",
+    descriptionHtml:
+      "<p>Lightweight facial oil with tea tree and chamomile for combination skin.</p>",
     price: 38,
     originalPrice: null,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/balancing1.jpg",
     images: ["/placeholder.svg"],
     badge: null,
     category: "oil",
@@ -522,12 +565,14 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-8",
     variantId: "mock-variant-8",
     name: "Eye Cream",
-    description: "Cooling eye cream with caffeine and peptides to depuff and brighten.",
-    descriptionHtml: "<p>Cooling eye cream with caffeine and peptides to depuff and brighten.</p>",
+    description:
+      "Cooling eye cream with caffeine and peptides to depuff and brighten.",
+    descriptionHtml:
+      "<p>Cooling eye cream with caffeine and peptides to depuff and brighten.</p>",
     price: 36,
     originalPrice: null,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/Eyecream1.jpg",
     images: ["/placeholder.svg"],
     badge: null,
     category: "cream",
@@ -539,19 +584,21 @@ const MOCK_PRODUCTS: Product[] = [
     shopifyId: "mock-gid-9",
     variantId: "mock-variant-9",
     name: "Vitamin C Serum",
-    description: "Potent 15% Vitamin C serum with ferulic acid for antioxidant protection.",
-    descriptionHtml: "<p>Potent 15% Vitamin C serum with ferulic acid for antioxidant protection.</p>",
+    description:
+      "Potent 15% Vitamin C serum with ferulic acid for antioxidant protection.",
+    descriptionHtml:
+      "<p>Potent 15% Vitamin C serum with ferulic acid for antioxidant protection.</p>",
     price: 58,
     originalPrice: 68,
     currencyCode: "USD",
-    image: "/placeholder.svg",
+    image: "/vitc.jpg",
     images: ["/placeholder.svg"],
     badge: "Sale",
     category: "serum",
     productType: "Serum",
     availableForSale: true,
   },
-]
+];
 
 const MOCK_CART: Cart = {
   id: "mock-cart-1",
@@ -562,20 +609,23 @@ const MOCK_CART: Cart = {
     totalAmount: { amount: "0", currencyCode: "USD" },
   },
   lines: [],
-}
+};
 
 function useMockData(): boolean {
-  return !process.env.SHOPIFY_STORE_DOMAIN || !process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+  return (
+    !process.env.SHOPIFY_STORE_DOMAIN ||
+    !process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN
+  );
 }
 
 export async function getMockProducts(): Promise<Product[]> {
-  return MOCK_PRODUCTS
+  return MOCK_PRODUCTS;
 }
 
 export async function getMockProduct(handle: string): Promise<Product | null> {
-  return MOCK_PRODUCTS.find((p) => p.id === handle) ?? null
+  return MOCK_PRODUCTS.find((p) => p.id === handle) ?? null;
 }
 
 export async function getMockCart(): Promise<Cart> {
-  return MOCK_CART
+  return MOCK_CART;
 }

@@ -1,56 +1,81 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { ChevronLeft, Minus, Plus, ChevronDown, Leaf, Heart, Award, Recycle, Star, Check } from "lucide-react"
-import { Header } from "@/components/boty/header"
-import { Footer } from "@/components/boty/footer"
-import { useCart } from "@/components/boty/cart-context"
-import type { Product } from "@/lib/shopify"
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  ChevronLeft,
+  Minus,
+  Plus,
+  ChevronDown,
+  Leaf,
+  Heart,
+  Award,
+  Recycle,
+  Star,
+  Check,
+} from "lucide-react";
+import { Header } from "@/components/boty/header";
+import { Footer } from "@/components/boty/footer";
+import { useCart } from "@/components/boty/cart-context";
+import type { Product } from "@/lib/shopify";
 
 const benefits = [
   { icon: Leaf, label: "100% Natural" },
   { icon: Heart, label: "Cruelty-Free" },
   { icon: Recycle, label: "Eco-Friendly" },
   { icon: Award, label: "Expert Approved" },
-]
+];
 
-type AccordionSection = "details" | "howToUse" | "ingredients" | "delivery"
+type AccordionSection = "details" | "howToUse" | "ingredients" | "delivery";
 
 export function ProductDetail({ product }: { product: Product }) {
-  const { addItem, setIsOpen } = useCart()
-  const [quantity, setQuantity] = useState(1)
-  const [openAccordion, setOpenAccordion] = useState<AccordionSection | null>("details")
-  const [isAdded, setIsAdded] = useState(false)
+  const { addItem, setIsOpen } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [openAccordion, setOpenAccordion] = useState<AccordionSection | null>(
+    "details",
+  );
+  const [isAdded, setIsAdded] = useState(false);
 
   const formatPrice = (amount: number) =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: product.currencyCode }).format(amount)
+    new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: product.currencyCode,
+    }).format(amount);
 
   const toggleAccordion = (section: AccordionSection) => {
-    setOpenAccordion(openAccordion === section ? null : section)
-  }
+    setOpenAccordion(openAccordion === section ? null : section);
+  };
 
   const handleAddToCart = async () => {
-    if (!product.variantId) return
-    await addItem(product.variantId, quantity)
-    setIsAdded(true)
-    setTimeout(() => setIsAdded(false), 2000)
-  }
+    if (!product.variantId) return;
+    await addItem(product.variantId, quantity);
+    setIsAdded(true);
+    setTimeout(() => setIsAdded(false), 2000);
+  };
 
   const handleBuyNow = async () => {
-    if (!product.variantId) return
-    await addItem(product.variantId, quantity)
-    setIsOpen(true)
-  }
+    if (!product.variantId) return;
+    await addItem(product.variantId, quantity);
+    setIsOpen(true);
+  };
 
-  const accordionItems: { key: AccordionSection; title: string; content: string }[] = [
-    { key: "details", title: "Details", content: product.descriptionHtml.replace(/<[^>]+>/g, "") || product.description },
+  const accordionItems: {
+    key: AccordionSection;
+    title: string;
+    content: string;
+  }[] = [
+    {
+      key: "details",
+      title: "Details",
+      content:
+        product.descriptionHtml.replace(/<[^>]+>/g, "") || product.description,
+    },
     {
       key: "howToUse",
       title: "How to Use",
       content:
-        "Apply to cleansed skin morning and evening. Gently massage until fully absorbed. For best results, use consistently as part of your daily AMBER ritual.",
+        "Apply to cleansed skin morning and evening. Gently massage until fully absorbed. For best results, use consistently as part of your daily SkinTone ritual.",
     },
     {
       key: "ingredients",
@@ -64,7 +89,7 @@ export function ProductDetail({ product }: { product: Product }) {
       content:
         "Free standard shipping on orders over $50. Express shipping available at checkout. All orders ship within 1-2 business days. Returns accepted within 30 days of purchase if product is unused and sealed.",
     },
-  ]
+  ];
 
   return (
     <main className="min-h-screen">
@@ -98,7 +123,7 @@ export function ProductDetail({ product }: { product: Product }) {
               {/* Header */}
               <div className="mb-8">
                 <span className="text-sm tracking-[0.3em] uppercase text-primary mb-2 block">
-                  AMBER Essentials
+                  SkinTone Essentials
                 </span>
                 <h1 className="font-serif text-4xl md:text-5xl text-foreground mb-3">
                   {product.name}
@@ -108,10 +133,15 @@ export function ProductDetail({ product }: { product: Product }) {
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                      <Star
+                        key={i}
+                        className="w-4 h-4 fill-primary text-primary"
+                      />
                     ))}
                   </div>
-                  <span className="text-sm text-muted-foreground">(128 reviews)</span>
+                  <span className="text-sm text-muted-foreground">
+                    (128 reviews)
+                  </span>
                 </div>
 
                 <p className="text-foreground/80 leading-relaxed">
@@ -121,7 +151,9 @@ export function ProductDetail({ product }: { product: Product }) {
 
               {/* Price */}
               <div className="flex items-center gap-3 mb-8">
-                <span className="text-3xl font-medium text-foreground">{formatPrice(product.price)}</span>
+                <span className="text-3xl font-medium text-foreground">
+                  {formatPrice(product.price)}
+                </span>
                 {product.originalPrice && (
                   <span className="text-xl text-muted-foreground line-through">
                     {formatPrice(product.originalPrice)}
@@ -131,7 +163,9 @@ export function ProductDetail({ product }: { product: Product }) {
 
               {/* Quantity Selector */}
               <div className="mb-8">
-                <label className="text-sm font-medium text-foreground mb-3 block">Quantity</label>
+                <label className="text-sm font-medium text-foreground mb-3 block">
+                  Quantity
+                </label>
                 <div className="inline-flex items-center gap-4 bg-card rounded-full px-2 py-2 boty-shadow">
                   <button
                     type="button"
@@ -141,7 +175,9 @@ export function ProductDetail({ product }: { product: Product }) {
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-8 text-center font-medium text-foreground">{quantity}</span>
+                  <span className="w-8 text-center font-medium text-foreground">
+                    {quantity}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setQuantity(quantity + 1)}
@@ -194,7 +230,9 @@ export function ProductDetail({ product }: { product: Product }) {
                     className="flex flex-col items-center gap-2 p-4 boty-shadow bg-transparent shadow-none rounded-md"
                   >
                     <benefit.icon className="w-5 h-5 text-primary" />
-                    <span className="text-xs text-muted-foreground text-center">{benefit.label}</span>
+                    <span className="text-xs text-muted-foreground text-center">
+                      {benefit.label}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -208,7 +246,9 @@ export function ProductDetail({ product }: { product: Product }) {
                       onClick={() => toggleAccordion(item.key)}
                       className="w-full flex items-center justify-between py-5 text-left"
                     >
-                      <span className="font-medium text-foreground">{item.title}</span>
+                      <span className="font-medium text-foreground">
+                        {item.title}
+                      </span>
                       <ChevronDown
                         className={`w-5 h-5 text-muted-foreground boty-transition ${
                           openAccordion === item.key ? "rotate-180" : ""
@@ -234,5 +274,5 @@ export function ProductDetail({ product }: { product: Product }) {
 
       <Footer />
     </main>
-  )
+  );
 }

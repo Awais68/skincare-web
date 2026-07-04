@@ -1,18 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { Menu, X, ShoppingBag, Search } from "lucide-react"
-import { CartDrawer } from "./cart-drawer"
-import { useCart } from "./cart-context"
+import { useState } from "react";
+import Link from "next/link";
+import { Menu, X, ShoppingBag, Search } from "lucide-react";
+import { CartDrawer } from "./cart-drawer";
+import { useCart } from "./cart-context";
 
 export function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { setIsOpen, itemCount } = useCart()
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { setIsOpen, itemCount } = useCart();
 
   return (
     <header className="fixed top-0 left-0 z-50 px-4 pt-4">
-      <nav className="w-fit px-6 lg:px-8 backdrop-blur-md rounded-lg py-0 my-0 animate-scale-fade-in bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.32)]" style={{ boxShadow: 'rgba(0, 0, 0, 0.1) 0px 10px 50px' }}>
+      <nav
+        className="w-fit px-6 lg:px-8 backdrop-blur-md rounded-lg py-0 my-0 animate-scale-fade-in bg-[rgba(255,255,255,0.4)] border border-[rgba(255,255,255,0.32)]"
+        style={{ boxShadow: "rgba(0, 0, 0, 0.1) 0px 10px 50px" }}
+      >
         <div className="flex items-center gap-8 h-[68px]">
           {/* Mobile menu button */}
           <button
@@ -21,12 +24,18 @@ export function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {isMenuOpen ? (
+              <X className="w-5 h-5" />
+            ) : (
+              <Menu className="w-5 h-5" />
+            )}
           </button>
 
           {/* Logo */}
           <Link href="/">
-            <h1 className="font-serif text-3xl tracking-wider text-foreground">AMBER</h1>
+            <h1 className="font-serif text-3xl tracking-wider text-foreground">
+              SkinTone
+            </h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,28 +44,34 @@ export function Header() {
               href="#collection"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .getElementById("collection")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Collection
             </a>
             <a
-              href="#why-amber"
+              href="#why-SkinTone"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('why-amber')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .getElementById("why-SkinTone")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Why AMBER
+              Why SkinTone
             </a>
             <a
               href="#impact"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .getElementById("impact")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Impact
@@ -65,8 +80,10 @@ export function Header() {
               href="#ingredients"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .getElementById("ingredients")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Ingredients
@@ -75,8 +92,10 @@ export function Header() {
               href="#reviews"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                document
+                  .getElementById("reviews")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Reviews
@@ -85,7 +104,6 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="hidden lg:flex items-center gap-4">
-            
             <button
               type="button"
               onClick={() => setIsOpen(true)}
@@ -139,31 +157,37 @@ export function Header() {
               href="#collection"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document
+                  .getElementById("collection")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Collection
             </a>
             <a
-              href="#why-amber"
+              href="#why-SkinTone"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('why-amber')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document
+                  .getElementById("why-SkinTone")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Why AMBER
+              Why SkinTone
             </a>
             <a
               href="#impact"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document
+                  .getElementById("impact")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Impact
@@ -172,9 +196,11 @@ export function Header() {
               href="#ingredients"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document
+                  .getElementById("ingredients")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Ingredients
@@ -183,9 +209,11 @@ export function Header() {
               href="#reviews"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
               onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })
+                e.preventDefault();
+                setIsMenuOpen(false);
+                document
+                  .getElementById("reviews")
+                  ?.scrollIntoView({ behavior: "smooth" });
               }}
             >
               Reviews
@@ -194,5 +222,5 @@ export function Header() {
         </div>
       </nav>
     </header>
-  )
+  );
 }
